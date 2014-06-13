@@ -8,7 +8,6 @@ import socket
 import signal
 import traceback
 from netifaces import interfaces, ifaddresses, AF_INET
-from struct import unpack
 
 
 class SocketTimeOut(Exception):
