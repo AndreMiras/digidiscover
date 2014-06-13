@@ -1,7 +1,9 @@
 This is a simple command-line utility that discovers DigiConnect devices on
 a IP network and prints out their MAC and IP addresses.
 
-Originally written by John Kelley.
+Originally written by John Kelley (<FirstName> (at) <LastName> (dot) ca).
 (http://kelley.ca/wordpress/2008/10/24/digi-connect-me-discovery/)
 
-Slight modifications by Tomaz Solc (tomaz.solc@tablix.org).
+Slight modifications by:
+    - Tomaz Solc    (<FirstName> (dot) <LastName> (at) tablix (dot) org)
+    - Andre Miras   (<FirstName> (dot) <LastName> (at) gmail (dot) com)

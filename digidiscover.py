@@ -1,27 +1,13 @@
 #!/usr/bin/env python
 
 # digidiscover.py
-# Author: John Kelley  <FirstName> (at) <LastName> dot ca
-# 10/24/08
+# Authors:
+#   - John Kelley   (<FirstName> (at) <LastName> (dot) ca)
+#   - Tomaz Solc    (<FirstName> (dot) <LastName> (at) tablix (dot) org)
+#   - Andre Miras   (<FirstName> (dot) <LastName> (at) gmail (dot) com)
+# 06/2014
 
 import socket
-import signal
-import traceback
-
-
-class SocketTimeOut(Exception):
-    def __init__(self, value):
-        self.parameter = value
-
-    def __str__(self):
-        return repr(self.parameter)
-
-
-def handler(signum, frame):
-    """This is a handler function called when a SIGALRM is received,
-    it simply raises a string exception"""
-
-    raise SocketTimeOut(frame)
 
 
 def detectDigiDevice(timeout=1):
@@ -57,9 +43,8 @@ def detectDigiDevice(timeout=1):
     # wait for a response
     try:
         # setup the timeout
-        signal.signal(signal.SIGALRM, handler)
-        signal.alarm(timeout)
-
+        outsock.settimeout(timeout)
+        # until the socket timeout is raised or CTRL+C
         while True:
             # wait for data
             data, addr = outsock.recvfrom(2048)
@@ -76,22 +61,15 @@ def detectDigiDevice(timeout=1):
             desc += data[36+len+8: 36+len+8+len2]
 
             responses.append((addr[0], mac, desc))
-
-    except SocketTimeOut:
-        if responses:
-            return responses
-        else:
-            raise
+    except (socket.timeout, KeyboardInterrupt):
+        pass
+    return responses
 
 if __name__ == '__main__':
-    try:
-        for ip, mac, desc in detectDigiDevice():
-            if ip is None:
-                print "Unable to find a Digi device"
-                exit()
-            else:
-                print "Found '%s' with MAC %s @ %s" % (desc, mac, ip)
-    except SocketTimeOut:
-        print "Timed out waiting for a response from a Digi device"
-    except:
-        traceback.print_exc()
+    for ip, mac, desc in detectDigiDevice():
+        if ip is None:
+            print "Unable to find a Digi device"
+            exit()
+        else:
+            print "Found '%s' with MAC %s @ %s" % (desc, mac, ip)
+    print "Timed out waiting for a response from a Digi device"
