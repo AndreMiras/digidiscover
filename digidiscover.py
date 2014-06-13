@@ -7,7 +7,6 @@
 import socket
 import signal
 import traceback
-from netifaces import interfaces, ifaddresses, AF_INET
 
 
 class SocketTimeOut(Exception):
@@ -41,13 +40,17 @@ def detectDigiDevice(timeout=1):
     outsock.bind(('', listenPort))
 
     # send our discovery packet out over all interfaces
-    for ifaceName in interfaces():
-        try:
-            for i in ifaddresses(ifaceName)[AF_INET]:
-                outsock.sendto(
-                    digiDiscoverPacket, (i['broadcast'], broadcastPort))
-        except:
-            pass
+    try:
+        from netifaces import interfaces, ifaddresses, AF_INET
+        for ifaceName in interfaces():
+            try:
+                for i in ifaddresses(ifaceName)[AF_INET]:
+                    outsock.sendto(
+                        digiDiscoverPacket, (i['broadcast'], broadcastPort))
+            except:
+                pass
+    except ImportError:
+        outsock.sendto(digiDiscoverPacket, ("255.255.255.255", broadcastPort))
 
     responses = []
 
